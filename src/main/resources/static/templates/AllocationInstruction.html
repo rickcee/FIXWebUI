@@ -1,0 +1,85 @@
+<div class="container">
+
+	<div class="row">
+		<div class="col-sm">
+		</div>
+		<div class="col-lg-8 btn-group">
+		        <label class="btn btn-primary" ng-model="allocMsgType" uib-btn-radio="'AllocationInstruction'" btn-checkbox-true>Allocation Instruction (35=J)</label>
+		        <label class="btn btn-primary" ng-model="allocMsgType" uib-btn-radio="'AllocationReport'" >Allocation Report (35=AS)</label>
+		</div>
+		<div class="col-sm">
+		</div>
+    </div>
+
+	<div class="row">
+		<div class="col-sm">
+			<input type="text" placeholder="OnBehalfOfCompId" class="form-control" ng-model="model.onBehalfOfCompId" />
+		</div>
+		<div class="col">
+			<ui-select ng-model="internal.selectedBuySell" theme="selectize">
+			    <ui-select-match placeholder="">{{internal.selectedBuySell.value}}</ui-select-match>
+			    <ui-select-choices repeat="item in buySellOpts | filter: $select.search">
+			        <span ng-bind-html="item.value | highlight: $select.search"></span>
+			    </ui-select-choices>
+			</ui-select>				
+		</div>
+		<div class="col-sm">
+			<input type="text" placeholder="TradeDate" class="form-control" ng-model="model.tradeDate"
+				tooltip="Trade Date (yyyyMMdd)"
+           			tooltip-placement="top"
+           			tooltip-trigger="'mouseenter'" 
+           			tooltip-enable=true
+			/>
+		</div>
+		<div class="col-sm">
+			<input type="text" placeholder="SettleDate" class="form-control" ng-model="model.settleDate"
+				uib-tooltip="Settle Date (yyyyMMdd)"
+           			tooltip-placement="top"
+           			tooltip-trigger="'mouseenter'" 
+           			tooltip-enable='true'
+			/>
+		</div>
+		<div class="col">
+			<ui-select ng-model="internal.selectedSecurityIdSource" theme="selectize">
+			    <ui-select-match placeholder="">{{internal.selectedSecurityIdSource.value}}</ui-select-match>
+			    <ui-select-choices repeat="item in securitySourceList | filter: $select.search">
+			        <span ng-bind-html="item.value | highlight: $select.search"></span>
+			    </ui-select-choices>
+			</ui-select>				
+		</div>
+		<div class="col-sm">
+			<input type="text" placeholder="Security ID" class="form-control" ng-model="model.securityId" />
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-lg">
+			<div id="grid1" ui-grid="gridOpts" ui-grid-edit ui-grid-selection class="grid"></div>
+		</div>
+	</div>
+	<div class="row" style="margin-top: 5px">
+		<div class="col-sm">
+		</div>
+		<div class="col-sm">
+			<button class="btn btn-primary" ng-click="addData()" style="width: 100%"><i class="glyphicon glyphicon-plus"></i> Add new Allocation</button>
+		</div>
+		<div class="col-sm">
+			<button class="btn btn-warning" ng-click="removeData()" style="width: 100%"><i class="glyphicon glyphicon-minus"></i> Remove Allocation</button>
+		</div>
+		<div class="col-sm">
+		</div>
+	</div>
+	<hr/>
+	<div class="row" style="margin-top: 5px">
+		<div class="col-sm">
+		</div>
+		<div class="col-sm">
+			<button class="btn btn-success" ng-click="viewData()" style="width: 100%"><i class="glyphicon glyphicon-plus"></i> Send Message</button>
+		</div>
+		<div class="col-sm">
+			<button class="btn btn-danger" ng-click="clearAll()" style="width: 100%"><i class="glyphicon glyphicon-minus"></i> Clear Data</button>
+		</div>
+		<div class="col-sm">
+		</div>
+	</div>
+
+</div>

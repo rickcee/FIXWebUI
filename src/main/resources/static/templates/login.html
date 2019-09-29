@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>FIX Msg Generator</title>
+
+<link rel="stylesheet" href="css/login.css">
+<!-- <script src="login.js"></script> -->
+
+<script type="text/javascript">
+		var myParam = location.search.split('error=')[1]
+		if(myParam != null) {
+			alert("Invalid Username / Password!");
+		}
+	</script>
+
+</head>
+
+<body>
+	<div class="login">
+
+		<div class="login-screen">
+			<div>
+				<img alt="" src="images/application_info.png" width="250"
+					height="250">
+			</div>
+			<div class="app-title">
+				<h1>FIX Msg Generator</h1>
+			</div>
+
+			<div class="login-form">
+				<form id='loginForm' action="login" method='POST'>
+
+					<div class="control-group">
+						<input type="text" class="login-field" value="" name="username"
+							placeholder="Username" id="login-name"> <label
+							class="login-field-icon fui-user" for="login-name"></label>
+					</div>
+
+					<div class="control-group">
+						<input type="password" class="login-field" value=""
+							name="password" placeholder="Password" id="login-pass"> <label
+							class="login-field-icon fui-lock" for="login-pass"></label>
+					</div>
+
+					<div class="control-group">
+						<input type="submit" class="btn btn-primary btn-large btn-block"
+							value="Login" id="login-submit"> <label
+							class="login-field-icon fui-lock"></label>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

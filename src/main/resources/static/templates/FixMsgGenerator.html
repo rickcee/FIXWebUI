@@ -1,0 +1,156 @@
+<!doctype html>
+<html ng-app="fixApp">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="js/bootstrap-4.3.1-dist/css/bootstrap.css" />
+	<link rel="stylesheet" href="js/ui-grid-4.8.1/ui-grid.css" />
+	<link rel="stylesheet" href="js/angular-ui-select-0.19.7.css" />
+	<link rel="stylesheet" href="js/select2-3.4.5.css">    
+	<link rel="stylesheet" href="js/selectize-0.8.5.css">
+	<link rel="stylesheet" href="css/calendar.css">
+	<link rel="stylesheet" href="css/FixMsgGenerator.css">
+	
+	<script type="text/javascript" src="js/angular-1.7.8/angular.js"></script>
+	<script type="text/javascript" src="js/angular-1.7.8/angular-touch.js"></script>
+	<script type="text/javascript" src="js/angular-1.7.8/angular-animate.js"></script>
+	<script type="text/javascript" src="js/angular-1.7.8/angular-sanitize.js"></script>
+	 
+	<script type="text/javascript" src="js/angular-ui-select-0.19.7.js"></script>
+	<script type="text/javascript" src="js/ui-bootstrap-2.5.0/ui-bootstrap-tpls-2.5.0.min.js"></script>
+
+	<script type="text/javascript" src="js/ui-grid-4.8.1/ui-grid.js"></script>
+	
+	<script type="text/javascript" src="controllers/FixMsgGenerator.js"></script>
+
+	<script type="text/javascript" src="angularservices/ModalService.js"></script>
+
+</head>
+
+<body ng-controller="MainCtrl">
+
+	<div style="XXbackground-color:  #DAF7A6 ;">
+
+		<div class="container">
+			<div class="row">
+				<!-- 
+				<div class="col-sm">
+					<ui-select ng-model="internal.selectedFixVersion" theme="selectize">
+			    		<ui-select-match placeholder="">{{internal.selectedFixVersion.value}}</ui-select-match>
+			    		<ui-select-choices repeat="item in fixVersions | filter: $select.search">
+			        		<span ng-bind-html="item.value | highlight: $select.search"></span>
+			    		</ui-select-choices>
+					</ui-select>				
+				</div>
+				-->
+				<div class="col-sm">
+					<ui-select ng-model="internal.selectedFixSession" theme="selectize">
+			    		<ui-select-match placeholder="">{{internal.selectedFixSession.name}}</ui-select-match>
+			    		<ui-select-choices repeat="item in fixSessions | filter: $select.search">
+			        		<span ng-bind-html="item.name | highlight: $select.search"></span>
+			    		</ui-select-choices>
+					</ui-select>				
+				</div>
+				<!-- 
+				<div class="col-sm">
+					<input type="text" placeholder="SenderCompId" class="form-control" ng-model="model.senderCompId" />
+				</div>
+				<div class="col-sm">
+					<input type="text" placeholder="TargetCompId" class="form-control" ng-model="model.targetCompId" />
+				</div>
+				-->
+				<div class="col-sm">
+					<input type="text" placeholder="OnBehalfOfCompId" class="form-control" ng-model="model.onBehalfOfCompId" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col">
+					<ui-select ng-model="internal.selectedBuySell" theme="selectize">
+					    <ui-select-match placeholder="">{{internal.selectedBuySell.value}}</ui-select-match>
+					    <ui-select-choices repeat="item in buySellOpts | filter: $select.search">
+					        <span ng-bind-html="item.value | highlight: $select.search"></span>
+					    </ui-select-choices>
+					</ui-select>				
+				</div>
+				<div class="col-sm">
+					<input type="text" placeholder="TradeDate" class="form-control" ng-model="model.tradeDate"
+						tooltip="Trade Date (yyyyMMdd)"
+             			tooltip-placement="top"
+             			tooltip-trigger="'mouseenter'" 
+             			tooltip-enable=true
+					/>
+				</div>
+				<div class="col-sm">
+					<input type="text" placeholder="SettleDate" class="form-control" ng-model="model.settleDate"
+						uib-tooltip="Settle Date (yyyyMMdd)"
+             			tooltip-placement="top"
+             			tooltip-trigger="'mouseenter'" 
+             			tooltip-enable='true'
+					/>
+				</div>
+				<div class="col">
+					<ui-select ng-model="internal.selectedSecurityIdSource" theme="selectize">
+					    <ui-select-match placeholder="">{{internal.selectedSecurityIdSource.value}}</ui-select-match>
+					    <ui-select-choices repeat="item in securitySourceList | filter: $select.search">
+					        <span ng-bind-html="item.value | highlight: $select.search"></span>
+					    </ui-select-choices>
+					</ui-select>				
+				</div>
+				<div class="col-sm">
+					<input type="text" placeholder="Security ID" class="form-control" ng-model="model.securityId" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg">
+					<div id="grid1" ui-grid="gridOpts" ui-grid-edit ui-grid-selection class="grid"></div>
+				</div>
+			</div>
+			<div class="row" style="margin-top: 5px">
+				<div class="col-sm">
+				</div>
+				<div class="col-sm">
+					<button class="btn btn-primary" ng-click="addData()" style="width: 100%"><i class="glyphicon glyphicon-plus"></i> Add new Allocation</button>
+				</div>
+				<div class="col-sm">
+					<button class="btn btn-warning" ng-click="removeData()" style="width: 100%"><i class="glyphicon glyphicon-minus"></i> Remove Allocation</button>
+				</div>
+				<div class="col-sm">
+				</div>
+			</div>
+			<hr/>
+			<div class="row" style="margin-top: 5px">
+				<div class="col-sm">
+				</div>
+				<div class="col-sm">
+					<button class="btn btn-success" ng-click="viewData()" style="width: 100%"><i class="glyphicon glyphicon-plus"></i> View JSON / FIX Data</button>
+				</div>
+				<div class="col-sm">
+					<button class="btn btn-danger" ng-click="clearAll()" style="width: 100%"><i class="glyphicon glyphicon-minus"></i> Clear All</button>
+				</div>
+				<div class="col-sm">
+				</div>
+			</div>
+						
+			<div class="row" style="margin-top: 15px; ">
+				<div class="col-lg">
+					<textarea rows="5" ng-model="resultFix" style="min-width: 100%">
+					</textarea>
+				</div>
+			</div>
+		
+			<div class="row" style="margin-top: 15px; ">
+				<div class="col-lg">
+					<textarea rows="15" ng-model="result" style="min-width: 100%">
+					</textarea>
+				</div>
+			</div>
+
+			{{internal.selectedFixVersion}}
+			{{internal.selectedBuySell}}
+		</div>
+
+	</div>
+		
+</body>
+
+</html>
