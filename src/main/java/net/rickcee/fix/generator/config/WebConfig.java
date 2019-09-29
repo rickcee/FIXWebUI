@@ -33,8 +33,7 @@ public class WebConfig implements WebMvcConfigurer {
 	
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
-		registry.addViewController("/FixMsgGenerator").setViewName("FixMsgGenerator");
-		registry.addViewController("/FixBlotterApp").setViewName("FixBlotterApp");
+		registry.addViewController("/FixWebUI").setViewName("FixWebUI");
 		registry.addViewController("/login").setViewName("login");
 	}
 

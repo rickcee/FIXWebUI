@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 import net.rickcee.fix.generator.model.FIX44;
 import net.rickcee.fix.generator.model.FIX50;
-import net.rickcee.fix.generator.model.FixAllocationInstructionMsgModel;
+import net.rickcee.fix.generator.model.FixAllocationMsgModel;
 import net.rickcee.fix.server.RCNetFixServer;
 import quickfix.Message;
 import quickfix.SessionID;
@@ -73,7 +73,7 @@ public class FixMsgGeneratorController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/public/fix/allocation/send", produces = { "application/json" })
-	public Object generateFixMessage(@RequestBody FixAllocationInstructionMsgModel model) {
+	public Object generateFixMessage(@RequestBody FixAllocationMsgModel model) {
 		HashMap<String, String> result = new HashMap<>();
 		
 		String session = model.getSessionId();

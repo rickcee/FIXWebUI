@@ -28,10 +28,6 @@ import quickfix.fix44.AllocationInstruction;
 import quickfix.fix44.AllocationInstructionAck;
 
 /**
- * 
- */
-
-/**
  * @author rickcee
  *
  */

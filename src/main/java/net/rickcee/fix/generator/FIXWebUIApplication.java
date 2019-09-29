@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
 @EnableWebMvc
-public class FixMsgApplication extends SpringBootServletInitializer {
+public class FIXWebUIApplication extends SpringBootServletInitializer {
 
     @Bean
     public RequestContextListener requestContextListener() {
@@ -18,6 +18,6 @@ public class FixMsgApplication extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(FixMsgApplication.class, args);
+        SpringApplication.run(FIXWebUIApplication.class, args);
     }
 }

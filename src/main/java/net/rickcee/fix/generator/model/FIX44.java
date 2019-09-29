@@ -47,7 +47,7 @@ import quickfix.fix44.component.SettlParties;
 @Component
 public class FIX44 {
 
-	public synchronized AllocationInstruction generateAllocationInstruction(FixAllocationInstructionMsgModel model) {
+	public synchronized AllocationInstruction generateAllocationInstruction(FixAllocationMsgModel model) {
 		quickfix.fix44.AllocationInstruction ai = new AllocationInstruction();
 
 		ai.getHeader().setField(new OnBehalfOfCompID(model.getOnBehalfOfCompId()));
@@ -60,7 +60,7 @@ public class FIX44 {
 		// Tag 626
 		ai.setField(new AllocType(AllocType.CALCULATED));
 		// Tag 6
-		ai.setField(new AvgPx(105.12109375));
+		ai.setField(new AvgPx(model.getAvgPrice() != null ? model.getAvgPrice() : 99.98));
 		// Tag 54
 		ai.setField(new Side(model.getBuySell().charAt(0)));
 		// Tag 52
@@ -73,16 +73,8 @@ public class FIX44 {
 		// Tag 55
 		ai.setField(new Symbol("[N/A]"));
 		
-		//ai.setField(new SenderCompID(model.getSenderCompId()));
-		//ai.setField(new TargetCompID(model.getTargetCompId()));
-		//ai.setField(new MsgSeqNum(1));
-		//ai.setField(new SendingTime(LocalDateTime.now()));
-		//ai.set(new Currency("USD"));
 		ai.setField(new SecurityIDSource(model.getSecuritySource()));
 		ai.setField(new SecurityID(model.getSecurityId()));
-		//ai.setField(new SendingTime(LocalDateTime.now()));
-		
-		ai.setString(793, "PirulaX");
 		
 		model.getAllocs().forEach(alloc -> {
 			AllocationInstruction.NoAllocs g = new AllocationInstruction.NoAllocs();

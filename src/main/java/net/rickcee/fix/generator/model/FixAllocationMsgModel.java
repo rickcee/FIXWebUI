@@ -14,7 +14,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class FixAllocationInstructionMsgModel {
+public class FixAllocationMsgModel {
 	private String sessionId;
 	private String onBehalfOfCompId;
 	private String buySell;
@@ -23,6 +23,7 @@ public class FixAllocationInstructionMsgModel {
 	private String tradeDate;
 	private String settleDate;
 	private Long quantity;
+	private Double avgPrice;
 	private Boolean sendToClient = Boolean.TRUE;
 	private List<FixAllocModel> allocs;
 }
