@@ -53,30 +53,59 @@
 	</div>
 	<div class="row">
 		<div class="col-lg">
-			<div id="grid1" ui-grid="gridOpts" ui-grid-edit ui-grid-selection class="grid"></div>
+			<div id="grid1" ui-grid="gridOpts" ui-grid-edit ui-grid-selection ui-grid-auto-resize class="grid"></div>
 		</div>
 	</div>
 	<div class="row" style="margin-top: 5px">
 		<div class="col-sm">
 		</div>
 		<div class="col-sm">
-			<button class="btn btn-primary" ng-click="addData()" style="width: 100%"><i class="glyphicon glyphicon-plus"></i> Add new Allocation</button>
+			<button class="btn btn-primary" ng-click="addData()" style="width: 100%"><i class="fa fa-plus"></i> Add new Allocation</button>
 		</div>
 		<div class="col-sm">
-			<button class="btn btn-warning" ng-click="removeData()" style="width: 100%"><i class="glyphicon glyphicon-minus"></i> Remove Allocation</button>
+			<button class="btn btn-warning" ng-click="removeData()" style="width: 100%"><i class="fa fa-minus"></i> Remove Allocation</button>
 		</div>
 		<div class="col-sm">
 		</div>
 	</div>
 	<hr/>
+	<uib-accordion close-others="true">
+	    <div uib-accordion-group class="panel-default" is-open="customTagStatus">
+			<uib-accordion-heading ng-click="toggleOpen();">
+			  Custom FIX Tags <i class="pull-right fa" ng-class="{'fa-chevron-down': customTagStatus, 'fa-chevron-right': !customTagStatus }"></i>
+			</uib-accordion-heading>	    
+			<div class="row">
+				<div class="col-sm">
+				</div>
+				<div class="col-md">
+					<div nf-if="customTagStatus" id="grid2" ui-grid="customTagGridOpts" ui-grid-edit ui-grid-selection ui-grid-auto-resize class="grid"></div>
+				</div>
+				<div class="col-sm">
+				</div>
+			</div>
+			<div class="row" style="margin-top: 5px">
+				<div class="col-sm">
+				</div>
+				<div class="col-sm">
+					<button class="btn btn-success" ng-click="addCustomFix()" style="width: 100%"><i class="fa fa-plus"></i> Add Custom FIX Field</button>
+				</div>
+				<div class="col-sm">
+					<button class="btn btn-warning" ng-click="removeCustomFix()" style="width: 100%"><i class="fa fa-minus"></i> Remove Selected FIX Field</button>
+				</div>
+				<div class="col-sm">
+				</div>
+			</div>
+	    </div>
+    </uib-accordion>
+	<hr/>
 	<div class="row" style="margin-top: 5px">
 		<div class="col-sm">
 		</div>
 		<div class="col-sm">
-			<button class="btn btn-success" ng-click="viewData()" style="width: 100%"><i class="glyphicon glyphicon-plus"></i> Send Message</button>
+			<button class="btn btn-success" ng-click="viewData()" style="width: 100%"><i class="fa fa-plus"></i> Send Message</button>
 		</div>
 		<div class="col-sm">
-			<button class="btn btn-danger" ng-click="clearAll()" style="width: 100%"><i class="glyphicon glyphicon-minus"></i> Clear Data</button>
+			<button class="btn btn-danger" ng-click="clearAll()" style="width: 100%"><i class="fa fa-minus"></i> Clear Data</button>
 		</div>
 		<div class="col-sm">
 		</div>

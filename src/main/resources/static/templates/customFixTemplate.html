@@ -1,0 +1,32 @@
+<div data-toggle="modal">
+	<div class="modal-content">
+		<div class="modal-header panel-dashboard">
+			<h4 class="modal-title">Add Custom FIX Tag</h4>
+		</div>
+		<div class="modal-body form-group">
+			<div class="row"">
+				<div class="col-sm">
+					<label>FIX Tag #:</label> 
+				</div>
+				<div class="col-sm">
+					<input type="text" ng-model="_key">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm">
+					<label>Value:</label> 
+				</div>
+				<div class="col-sm">
+					<input type="text" ng-model="_value">
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer panel-dashboard" style="margin: auto">
+			<button ng-click="add()" class="btn btn-primary" style="width: 100px; font-size: 12px">Add</button>
+			<button ng-click="cancel()" class="btn btn-primary" style="width: 100px; font-size: 12px">Cancel</button>
+		</div>
+		<div class="row" ng-show="debugMode">
+			{{_key}} / {{_value}}
+		</div>
+	</div>
+</div>

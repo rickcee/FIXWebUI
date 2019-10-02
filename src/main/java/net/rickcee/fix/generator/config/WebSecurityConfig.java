@@ -25,14 +25,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.antMatchers("/HealthCheck").permitAll()
 		.antMatchers("/public/**").permitAll()
 		.antMatchers("/actuator/**").permitAll()
-		.antMatchers("/FixMsgGenerator").permitAll()
-		.antMatchers("/FixBlotterApp").permitAll()
+		.antMatchers("/FixWebUI").permitAll()
 		.antMatchers("/secured/**").authenticated()
 		.anyRequest().permitAll()
 		
 		.and().formLogin()
 			.loginPage("/login").permitAll()
-			.defaultSuccessUrl("/FixMsgGenerator")
+			.defaultSuccessUrl("/FixWebUI")
 			.failureForwardUrl("/login")
 			.failureUrl("/login")
 			.usernameParameter("username")
@@ -55,6 +54,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		web.ignoring().antMatchers("/json/**");
 		web.ignoring().antMatchers("/angularservices/**");
 		web.ignoring().antMatchers("/controllers/**");
+		web.ignoring().antMatchers("/templates/**");
 	}
 
 	@Override

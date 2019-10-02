@@ -1,6 +1,6 @@
-var fixApp = angular.module('fixApp', ['ngSanitize', 'ngAnimate', 'ngTouch', 'ui.select', 'ui.bootstrap', 'ui.grid', 'ui.grid.edit', 'ui.grid.selection',]);
+var fixApp = angular.module('fixApp', ['ngSanitize', 'ngAnimate', 'ngTouch', 'ui.select', 'ui.bootstrap', 'ui.grid', 'ui.grid.edit', 'ui.grid.selection','ui.grid.autoResize']);
 
-fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$window', 'uiGridConstants', '$filter', function ($scope, $http, $uibModal, $interval, $window, uiGridConstants, $filter) {
+fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$window', 'uiGridConstants', '$filter', '$timeout', function ($scope, $http, $uibModal, $interval, $window, uiGridConstants, $filter, $timeout) {
 
 	$scope.debugMode = false;
 	$scope.debugClass = 'black';
@@ -15,6 +15,7 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 	}
 
 	$scope.model = { };
+	$scope.model.customTags = [];
 	$scope.internal = { };
 	
 	$scope.fixVersions = [{'key':'FIX44', 'value':'FIX 4.4 - Allocation Instruction'}, {'key':'FIXT1.1', 'value':'FIX 5.0 - Allocation Report'}];
@@ -78,7 +79,12 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 
 		      ] }
 	    ];
-	  
+	
+	var customTagColumnDef = [
+	    { name: 'key', displayName: 'Key', enableCellEdit: true, width: '50%' },
+	    { name: 'value', displayName: 'Value', enableCellEdit: true, width: '50%' },
+	    ];
+ 
 	$scope.model.allocs = [
 		    {
 		      "id": "1",
@@ -104,7 +110,25 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 		multiSelect : false,
 		columnDefs : columnDefs1,
 		data : $scope.model.allocs
-	};	  
+	};
+	
+	$scope.customTagGridOpts = {
+			enableRowSelection : true,
+			showGridFooter : true,
+			multiSelect : false,
+			columnDefs : customTagColumnDef,
+			data : $scope.model.customTags
+	};
+	
+	$scope.customTagGridOpts.onRegisterApi = function(gridApi){
+	    $scope.customTagGridApi = gridApi;
+	    gridApi.selection.on.rowSelectionChanged($scope,function(row){
+	        $scope.selectedCustomRow = row.entity;
+	      });
+        $timeout(function () {
+            gridApi.grid.handleWindowResize();
+        });	    
+	};
 
 	$scope.addData = function() {
 	    var n = $scope.gridOpts.data.length + 1;
@@ -140,6 +164,9 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 	    gridApi.selection.on.rowSelectionChanged($scope,function(row){
 	        $scope.selectedRow = row.entity;
 	      });
+        $timeout(function () {
+            gridApi.grid.handleWindowResize();
+        });	    
 	};
    
 	$scope.checkForSessionTimeout = function(data) {
@@ -163,5 +190,41 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 		});
 	}
 	  
+	$scope.addCustomFix = function() {
+		console.log('addCustomFix...');
+		var $uibModalInstance = $uibModal.open({
+			templateUrl : 'templates/customFixTemplate.html',
+			scope: $scope,
+			size: 'md',
+			controller : 
+				
+			function ($scope, $uibModal, $uibModalInstance) {
+				
+				$scope.cancel = function() {
+					$uibModalInstance.close();
+				};
+				
+				$scope.add = function() {
+					$scope.model.customTags.push({key: $scope._key, value: $scope._value});
+					$scope.cancel();
+				}
+				
+			},
+			backdrop : 'static'
+		});
+	};
+	  
+	$scope.removeCustomFix = function() {
+		var index = $scope.customTagGridOpts.data.indexOf($scope.selectedCustomRow);
+	    if (index > -1) {
+	    	$scope.customTagGridOpts.data.splice(index, 1);
+	    }
+	}
+	
+	$scope.customTagStatus = false;
+	$scope.toggleOpen = function() {
+		$scope.customTagStatus = !$scope.customTagStatus;
+	}
+	
 }
 ]);

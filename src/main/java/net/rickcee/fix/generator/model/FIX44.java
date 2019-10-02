@@ -126,6 +126,10 @@ public class FIX44 {
 			ai.addGroup(g);
 		});
 		
+		model.getCustomTags().forEach(customTag -> {
+			ai.setString(Integer.parseInt(customTag.get("key")), customTag.get("value"));
+		});
+		
 		return ai;
 	}
 }

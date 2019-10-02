@@ -3,7 +3,9 @@
  */
 package net.rickcee.fix.generator.model;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,4 +28,5 @@ public class FixAllocationMsgModel {
 	private Double avgPrice;
 	private Boolean sendToClient = Boolean.TRUE;
 	private List<FixAllocModel> allocs;
+	private List<Map<String, String>> customTags = new ArrayList<>();
 }
