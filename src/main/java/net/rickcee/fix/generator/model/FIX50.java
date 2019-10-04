@@ -47,7 +47,7 @@ import quickfix.fix50.component.SettlParties;
 @Component
 public class FIX50 {
 
-	public synchronized AllocationReport generateAllocationInstruction(FixAllocationMsgModel model) {
+	public synchronized AllocationReport generateAllocationReport(FixAllocationMsgModel model) {
 		AllocationReport ai = new AllocationReport();
 		
 		ai.getHeader().setField(new OnBehalfOfCompID(model.getOnBehalfOfCompId()));
@@ -125,7 +125,11 @@ public class FIX50 {
 			// Add Allocation
 			ai.addGroup(g);
 		});
-
+		
+		model.getCustomTags().forEach(customTag -> {
+			ai.setString(Integer.parseInt(customTag.get("key")), customTag.get("value"));
+		});
+		
 		return ai;
 	}
 }

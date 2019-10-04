@@ -89,7 +89,7 @@ public class FixMsgGeneratorController {
 		if(session.startsWith("FIX.4.4")) {
 			msg = fix44.generateAllocationInstruction(model);
 		} else if(session.startsWith("FIXT.1.1")) {
-			msg = fix50.generateAllocationInstruction(model);
+			msg = fix50.generateAllocationReport(model);
 		} else {
 			// ??
 		}
