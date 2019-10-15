@@ -40,8 +40,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.and().logout()
 			.logoutSuccessUrl("/login")
 			.invalidateHttpSession(true)
-		
+			
 		;
+		
+		// For H2 Console to Work...
+		http.headers().frameOptions().sameOrigin();
 		// @formatter:on
 	}
 

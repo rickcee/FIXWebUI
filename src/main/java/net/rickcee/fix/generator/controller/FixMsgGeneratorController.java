@@ -6,16 +6,22 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
-import net.rickcee.fix.generator.model.FIX44;
-import net.rickcee.fix.generator.model.FIX50;
+import net.rickcee.fix.generator.model.AllocationTestCase;
+import net.rickcee.fix.generator.model.FixAllocModel;
 import net.rickcee.fix.generator.model.FixAllocationMsgModel;
+import net.rickcee.fix.jpa.IGenericDao;
 import net.rickcee.fix.server.RCNetFixServer;
+import net.rickcee.fix.util.FIX44;
+import net.rickcee.fix.util.FIX50;
 import quickfix.Message;
 import quickfix.SessionID;
 import quickfix.ThreadedSocketAcceptor;
@@ -35,6 +41,13 @@ public class FixMsgGeneratorController {
 	private ThreadedSocketAcceptor threadedSocketAcceptor;
 	@Autowired
 	private RCNetFixServer fixServer;
+	
+	private IGenericDao<AllocationTestCase> dao;
+	@Autowired
+	public void setDao(IGenericDao<AllocationTestCase> daoToSet) {
+		dao = daoToSet;
+		dao.setClazz(AllocationTestCase.class);
+	}	
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/HealthCheck", produces = { "application/json" })
 	public Object healthCheck() {
@@ -56,6 +69,55 @@ public class FixMsgGeneratorController {
 		//result.put("senderCompId", env.getProperty("fix.defaultSenderCompId"));
 		//result.put("targetCompId", env.getProperty("fix.defaultTargetCompId"));
 		return result;
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/public/test_case/add", produces = { "application/json" })
+	public Object addTestCase() {
+//		AllocationTestCase newCase = AllocationTestCase.builder().name("Test Case 1").buySell("B").quantity(1000000L)
+//				.avgPrice(99.256).securitySource("CUSIP").securityId("912828CR7").build();
+		AllocationTestCase newCase =new AllocationTestCase();
+		newCase.setName("Test Case 1");
+		newCase.setBuySell("B");
+		newCase.setQuantity(1000000L);
+		newCase.setAvgPrice(99.256);
+		newCase.setSecuritySource("CUSIP");
+		newCase.setSecurityId("912828CR7");
+		FixAllocModel alloc = new FixAllocModel();
+		alloc.setId("ALLOC-ID");
+		alloc.setSettlementCurrency("USD");
+		alloc.setSettlementLocation("DTC");
+		alloc.setAccount("ACCT-1");
+		alloc.setAccruedInterest(99.58);
+		alloc.setNetMoney(50000.00);
+		alloc.setQuantity(1000000L);
+		newCase.getAllocs().add(alloc);
+		dao.create(newCase);
+		HashMap<String, String> result = new HashMap<>();
+		result.put("result", "OK");
+		return result;
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, path = "/public/cases/allocation", produces = { "application/json" })
+	public ResponseEntity<AllocationTestCase> CreateTestCase(@RequestBody AllocationTestCase atc) {
+		AllocationTestCase result = dao.create(atc);
+		return new ResponseEntity<AllocationTestCase>(result, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/public/cases/allocation/{id}", produces = { "application/json" })
+	public Object viewTestCase(@PathVariable("id") Long id) {
+		return dao.findOne(id);
+	}
+	
+	@RequestMapping(method = RequestMethod.DELETE, path = "/public/cases/allocation/{id}", produces = { "application/json" })
+	public ResponseEntity<AllocationTestCase> removeTestCase(@PathVariable("id") Long id) {
+		AllocationTestCase result = dao.findOne(id);
+		dao.delete(result);
+		return new ResponseEntity<AllocationTestCase>(result, HttpStatus.OK);
+	}
+	
+	@RequestMapping(method = RequestMethod.GET, path = "/public/test_case/view", produces = { "application/json" })
+	public Object getTestCase() {
+		return dao.findAll();
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/public/fix/sessions", produces = { "application/json" })

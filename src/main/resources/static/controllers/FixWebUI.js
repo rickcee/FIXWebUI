@@ -2,8 +2,9 @@ var fixApp = angular.module('fixApp', ['ngSanitize', 'ngAnimate', 'ngTouch', 'ui
 
 fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$window', 'uiGridConstants', '$filter', '$timeout', function ($scope, $http, $uibModal, $interval, $window, uiGridConstants, $filter, $timeout) {
 
-	$scope.debugMode = false;
+	$scope.debugMode = true;
 	$scope.debugClass = 'black';
+	$scope.allocMsgType = 'AllocationInstruction';
 	
 	$scope.toggleDebug = function() {
 		$scope.debugMode = !$scope.debugMode;
@@ -15,8 +16,12 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 	}
 
 	$scope.model = { };
-	$scope.model.customTags = [];
+	$scope.model.data = { };
+	$scope.model.data.customTags = [];
 	$scope.internal = { };
+	
+	$scope.testCases = [{'id':'FIX44', 'name':'2 Allocations - 50mm'}, {'id':'FIXT1.1', 'name':'5 Allocations - 250mm'}];
+	$scope.internal.selectedTestCase = $scope.testCases[0];
 	
 	$scope.fixVersions = [{'key':'FIX44', 'value':'FIX 4.4 - Allocation Instruction'}, {'key':'FIXT1.1', 'value':'FIX 5.0 - Allocation Report'}];
 	$scope.internal.selectedFixVersion = $scope.fixVersions[0];
@@ -38,12 +43,12 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 	}
 	
 	$scope.processDefaults = function() {
-		//$scope.model.senderCompId = $scope.defaults.senderCompId;
-		//$scope.model.targetCompId = $scope.defaults.targetCompId;
-		$scope.model.tradeDate = $filter('date')(new Date(), 'yyyyMMdd');
+		//$scope.model.data.senderCompId = $scope.defaults.senderCompId;
+		//$scope.model.data.targetCompId = $scope.defaults.targetCompId;
+		$scope.model.data.tradeDate = $filter('date')(new Date(), 'yyyyMMdd');
 		var sttlDate = new Date();
 		sttlDate.setDate(sttlDate.getDate()+2);
-		$scope.model.settleDate = $filter('date')(sttlDate, 'yyyyMMdd');
+		$scope.model.data.settleDate = $filter('date')(sttlDate, 'yyyyMMdd');
 	}
 	
 	$scope.loadDefaults();
@@ -60,8 +65,8 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 	
 	$scope.loadSessions();
 	
-	$scope.model.securityId="912828CR7";
-	$scope.model.onBehalfOfCompId="MY_CLIENT_ID";
+	$scope.model.data.securityId="912828CR7";
+	$scope.model.data.onBehalfOfCompId="MY_CLIENT_ID";
 	
 	var columnDefs1 = [
 		    { name: 'id', displayName: 'ID', enableCellEdit: true, width: '5%' },
@@ -85,7 +90,7 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 	    { name: 'value', displayName: 'Value', enableCellEdit: true, width: '50%' },
 	    ];
  
-	$scope.model.allocs = [
+	$scope.model.data.allocs = [
 		    {
 		      "id": "1",
 		      "account": "ACCT-1",
@@ -109,7 +114,7 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 		showGridFooter : true,
 		multiSelect : false,
 		columnDefs : columnDefs1,
-		data : $scope.model.allocs
+		data : $scope.model.data.allocs
 	};
 	
 	$scope.customTagGridOpts = {
@@ -117,7 +122,7 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 			showGridFooter : true,
 			multiSelect : false,
 			columnDefs : customTagColumnDef,
-			data : $scope.model.customTags
+			data : $scope.model.data.customTags
 	};
 	
 	$scope.customTagGridOpts.onRegisterApi = function(gridApi){
@@ -150,11 +155,12 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 	}
 	
 	$scope.viewData = function() {
-		//$scope.model.fixVersion = $scope.internal.selectedFixVersion.key;
-		$scope.model.sessionId = $scope.internal.selectedFixSession.name;
-		$scope.model.buySell = $scope.internal.selectedBuySell.key;
-		$scope.model.securitySource = $scope.internal.selectedSecurityIdSource.key;
-		$scope.result = JSON.stringify($scope.model, null, 4);
+		//$scope.model.data.fixVersion = $scope.internal.selectedFixVersion.key;
+		$scope.model.data.sessionId = $scope.internal.selectedFixSession.name;
+		$scope.model.data.buySell = $scope.internal.selectedBuySell.key;
+		$scope.model.data.securitySource = $scope.internal.selectedSecurityIdSource.key;
+		
+		//$scope.result = JSON.stringify($scope.model.data, null, 4);
 
 		$scope.sendToServer();
 	}
@@ -183,11 +189,30 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 		$http({
 			url : 'public/fix/allocation/send',
 			method : "POST",
-			data : $scope.model
+			data : $scope.model.data
 		}).then(function(response) {
 			console.log(response.data);
 			$scope.resultFix = response.data.result;
 		});
+	}
+	
+	$scope.clearNew = function() {
+		$scope.model.data = {
+				securityId: '912828CR7',
+				onBehalfOfCompId: '',
+				allocs : []
+		};
+		
+		$scope.model.data.tradeDate = $filter('date')(new Date(), 'yyyyMMdd');
+		var sttlDate = new Date();
+		sttlDate.setDate(sttlDate.getDate()+2);
+		$scope.model.data.settleDate = $filter('date')(sttlDate, 'yyyyMMdd');
+		
+		$scope.gridOpts.data = $scope.model.data.allocs;
+		
+		$scope.internal.selectedBuySell = $scope.buySellOpts[0];
+		$scope.internal.selectedSecurityIdSource = $scope.securitySourceList[0];
+		$scope.internal.selectedTestCase = null;
 	}
 	  
 	$scope.addCustomFix = function() {
@@ -205,7 +230,7 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 				};
 				
 				$scope.add = function() {
-					$scope.model.customTags.push({key: $scope._key, value: $scope._value});
+					$scope.model.data.customTags.push({key: $scope._key, value: $scope._value});
 					$scope.cancel();
 				}
 				
@@ -228,3 +253,21 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 	
 }
 ]);
+
+fixApp.directive('jsonText', function() {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function(scope, element, attr, ngModel) {            
+          function into(input) {
+            console.log(JSON.parse(input));
+            return JSON.parse(input);
+          }
+          function out(data) {
+            return JSON.stringify(data, undefined, 2);
+          }
+          ngModel.$parsers.push(into);
+          ngModel.$formatters.push(out);
+        }
+    };
+});

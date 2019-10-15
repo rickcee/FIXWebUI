@@ -1,12 +1,13 @@
 /**
  * 
  */
-package net.rickcee.fix.generator.model;
+package net.rickcee.fix.util;
 
 import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import net.rickcee.fix.generator.model.FixAllocationMsgModel;
 import quickfix.field.AllocAccount;
 import quickfix.field.AllocAccruedInterestAmt;
 import quickfix.field.AllocID;
@@ -126,8 +127,8 @@ public class FIX50 {
 			ai.addGroup(g);
 		});
 		
-		model.getCustomTags().forEach(customTag -> {
-			ai.setString(Integer.parseInt(customTag.get("key")), customTag.get("value"));
+		model.getCustomTags().keySet().forEach(customTag -> {
+			ai.setString(Integer.parseInt(customTag), model.getCustomTags().get(customTag));
 		});
 		
 		return ai;

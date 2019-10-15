@@ -1,19 +1,24 @@
 <div class="container">
 
-	<div class="row">
-		<div class="col-sm">
+	<div class="row" style="margin-top: 5px">
+		<div class="col-sm-4">
+			<ui-select ng-model="internal.selectedTestCase" theme="selectize">
+			    <ui-select-match placeholder="">{{internal.selectedTestCase.name}}</ui-select-match>
+			    <ui-select-choices repeat="item in testCases | filter: $select.search">
+			        <span ng-bind-html="item.name | highlight: $select.search"></span>
+			    </ui-select-choices>
+			</ui-select>				
 		</div>
-		<div class="col-lg-8 btn-group">
-		        <label class="btn btn-primary" ng-model="allocMsgType" uib-btn-radio="'AllocationInstruction'" btn-checkbox-true>Allocation Instruction (35=J)</label>
-		        <label class="btn btn-primary" ng-model="allocMsgType" uib-btn-radio="'AllocationReport'" >Allocation Report (35=AS)</label>
+		<div class="col-sm-8">
+			<label class="btn btn-primary btn-sm" ng-model="allocMsgType" uib-btn-radio="'AllocationInstruction'" btn-checkbox-true>Allocation Instruction (35=J)</label>
+			<label class="btn btn-primary btn-sm" ng-model="allocMsgType" uib-btn-radio="'AllocationReport'" >Allocation Report (35=AS)</label>
 		</div>
-		<div class="col-sm">
-		</div>
-    </div>
+	</div>
 
 	<div class="row">
 		<div class="col-sm">
-			<input type="text" placeholder="OnBehalfOfCompId" class="form-control" ng-model="model.onBehalfOfCompId" />
+			<input type="text" placeholder="OnBehalfOfCompId" class="form-control" ng-model="model.data.onBehalfOfCompId" 
+			uib-tooltip="On Behalf Of CompId" />
 		</div>
 		<div class="col">
 			<ui-select ng-model="internal.selectedBuySell" theme="selectize">
@@ -24,17 +29,17 @@
 			</ui-select>				
 		</div>
 		<div class="col-sm">
-			<input type="text" placeholder="TradeDate" class="form-control" ng-model="model.tradeDate"
-				tooltip="Trade Date (yyyyMMdd)"
-           			tooltip-placement="top"
+			<input type="text" placeholder="TradeDate" class="form-control" ng-model="model.data.tradeDate"
+				uib-tooltip="Trade Date (yyyyMMdd)"
+           			tooltip-placement="bottom"
            			tooltip-trigger="'mouseenter'" 
            			tooltip-enable=true
 			/>
 		</div>
 		<div class="col-sm">
-			<input type="text" placeholder="SettleDate" class="form-control" ng-model="model.settleDate"
+			<input type="text" placeholder="SettleDate" class="form-control" ng-model="model.data.settleDate"
 				uib-tooltip="Settle Date (yyyyMMdd)"
-           			tooltip-placement="top"
+           			tooltip-placement="bottom"
            			tooltip-trigger="'mouseenter'" 
            			tooltip-enable='true'
 			/>
@@ -48,7 +53,8 @@
 			</ui-select>				
 		</div>
 		<div class="col-sm">
-			<input type="text" placeholder="Security ID" class="form-control" ng-model="model.securityId" />
+			<input type="text" placeholder="Security ID" class="form-control" ng-model="model.data.securityId" 
+			uib-tooltip="Security ID" tooltip-placement="bottom"/>
 		</div>
 	</div>
 	<div class="row">
@@ -87,10 +93,10 @@
 				<div class="col-sm">
 				</div>
 				<div class="col-sm">
-					<button class="btn btn-success" ng-click="addCustomFix()" style="width: 100%"><i class="fa fa-plus"></i> Add Custom FIX Field</button>
+					<button class="btn btn-success btn-sm" ng-click="addCustomFix()" style="width: 100%"><i class="fa fa-plus"></i> Add Custom FIX Field</button>
 				</div>
 				<div class="col-sm">
-					<button class="btn btn-warning" ng-click="removeCustomFix()" style="width: 100%"><i class="fa fa-minus"></i> Remove Selected</button>
+					<button class="btn btn-warning btn-sm" ng-click="removeCustomFix()" style="width: 100%"><i class="fa fa-minus"></i> Remove Selected</button>
 				</div>
 				<div class="col-sm">
 				</div>
@@ -102,12 +108,23 @@
 		<div class="col-sm">
 		</div>
 		<div class="col-sm">
-			<button class="btn btn-success" ng-click="viewData()" style="width: 100%"><i class="fa fa-plus"></i> Send Message</button>
+			<button class="btn btn-success btn-sm" ng-click="viewData()" style="width: 100%"><i class="fa fa-send"></i> Send Message</button>
 		</div>
 		<div class="col-sm">
-			<button class="btn btn-danger" ng-click="clearAll()" style="width: 100%"><i class="fa fa-minus"></i> Clear Data</button>
+			<button class="btn btn-danger btn-sm" ng-click="clearNew()" style="width: 100%"><i class="fa fa-remove"></i> Clear / New</button>
 		</div>
 		<div class="col-sm">
+		</div>
+	</div>
+	<div class="row" style="margin-top: 5px">
+		<div class="col-sm">
+			<button class="btn btn-primary btn-sm" ng-click="" style="width: 100%"><i class="fa fa-save"></i> Update</button>
+		</div>
+		<div class="col-sm">
+			<button class="btn btn-primary btn-sm" ng-click="" style="width: 100%"><i class="fa fa-plus-square"></i> Save as New</button>
+		</div>
+		<div class="col-sm">
+			<button class="btn btn-primary btn-sm" ng-click="" style="width: 100%"><i class="fa fa-minus-square"></i> Remove</button>
 		</div>
 	</div>
 

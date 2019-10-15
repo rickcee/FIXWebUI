@@ -31,7 +31,7 @@
 <body ng-controller="MainCtrl">
 
 	<div style="XXbackground-color:  #DAF7A6 ;">
-
+		<!-- 
 		<div class="row" style="margin-top: 5px">
 			<div class="col-sm" style="text-align: right">
 				<label>Select Session:</label>
@@ -48,19 +48,24 @@
 				<label ng-class="debugClass" ng-click="toggleDebug();"><i class="fa fa-bug"></i></label>
 			</div>
 		</div>
-
+		-->
 		<uib-tabset>
 			<uib-tab>
 				<uib-tab-heading>
 					<i class="fa fa-home"> Home</i> 
 				</uib-tab-heading>
-				<div>This is the Home tab.</div>
+				<div style="margin: 5px">
+					<h4>Welcome to the FIX Web UI</h4>
+					<pre style="margin: 5px"> Here you can act as a FIX Server (a.k.a. Actuator) and send custom messages to FIX clients.</pre>
+				</div>
 			</uib-tab>
 			<uib-tab>
 				<uib-tab-heading>
 					<i class="fa fa-cube"> Block Trades</i> 
 				</uib-tab-heading>
-				<div>Coming Soon...</div>
+				<div style="margin: 5px">
+					<pre style="margin: 5px">Coming Soon...</pre>
+				</div>
 			</uib-tab>
 			<uib-tab>
 				<uib-tab-heading>
@@ -70,16 +75,16 @@
 			</uib-tab>
 		</uib-tabset>
 						
-		<div class="row" style="margin-top: 15px; ">
+		<div class="row" style="margin-top: 15px;" ng-show="debugMode">
 			<div class="col-lg">
 				<textarea rows="5" ng-model="resultFix" style="min-width: 100%">
 				</textarea>
 			</div>
 		</div>
 	
-		<div class="row" style="margin-top: 15px; " ng-show="debugMode">
+		<div class="row" style="margin-top: 15px;" ng-show="debugMode">
 			<div class="col-lg">
-				<textarea rows="15" ng-model="result" style="min-width: 100%">
+				<textarea rows="15" json-text ng-model="model.data" style="min-width: 100%">
 				</textarea>
 			</div>
 		</div>

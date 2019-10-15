@@ -3,15 +3,17 @@
  */
 package net.rickcee.fix.server;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
+import net.rickcee.fix.util.Fix44Cracker;
+import net.rickcee.fix.util.Fix50Cracker;
 import quickfix.Application;
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
 import quickfix.IncorrectDataFormat;
 import quickfix.IncorrectTagValue;
-import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.RejectLogon;
 import quickfix.Session;
@@ -27,7 +29,11 @@ import quickfix.fix44.Reject;
  */
 @Slf4j
 @Component
-public class RCNetFixServer extends quickfix.fix44.MessageCracker implements Application {
+public class RCNetFixServer implements Application {
+	@Autowired
+	private Fix44Cracker msgCracker44;
+	@Autowired
+	private Fix50Cracker msgCracker50;
 	
 	@Override
 	public void onCreate(SessionID sessionId) {
@@ -53,12 +59,6 @@ public class RCNetFixServer extends quickfix.fix44.MessageCracker implements App
 	public void fromAdmin(Message message, SessionID sessionId)
 			throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, RejectLogon {
 		log.info("--------- fromAdmin ---------");
-		try {
-			// Customize session msgs...
-			crack(message, sessionId);
-		} catch (Exception e) {
-			log.error(" Error processing Msg: [" + message + "]: " + e.getMessage(), e);
-		}		
 	}
 
 	@Override
@@ -71,26 +71,14 @@ public class RCNetFixServer extends quickfix.fix44.MessageCracker implements App
 			throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
 		log.info("--------- fromApp ---------");
 		try {
-			crack(message, sessionId);
+			if (sessionId.getBeginString().startsWith("FIX.4.4")) {
+				msgCracker44.crack(message, sessionId);
+			} else if (sessionId.getBeginString().startsWith("FIX.5.0")) {
+				msgCracker50.crack(message, sessionId);
+			}
 		} catch (Exception e) {
 			log.error(" Error processing Msg: [" + message + "]: " + e.getMessage(), e);
 		}		
-	}
-
-	public void onMessage(quickfix.fix44.AllocationInstructionAck ai, SessionID sessionId) throws FieldNotFound {
-		log.info("AllocationInstructionAck: " + sessionId + " // " + ai.getAllocID());
-	}
-
-	public void onMessage(quickfix.fix50.AllocationInstructionAck ai, SessionID sessionId) throws FieldNotFound {
-		log.info("AllocationInstructionAck: " + sessionId + " // " + ai.getAllocID());
-	}
-
-	public void onMessage(quickfix.fix44.AllocationReportAck ai, SessionID sessionId) throws FieldNotFound {
-		log.info("AllocationReportAck: " + sessionId + " // " + ai.getAllocID());
-	}
-
-	public void onMessage(quickfix.fix50.AllocationReportAck ai, SessionID sessionId) throws FieldNotFound {
-		log.info("AllocationReportAck: " + sessionId + " // " + ai.getAllocID());
 	}
 	
 	public void onMessage(Reject ai, SessionID sessionId) throws FieldNotFound {
