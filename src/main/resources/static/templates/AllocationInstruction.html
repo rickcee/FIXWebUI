@@ -1,6 +1,23 @@
 <div class="container">
-
+	<div style="margin-top: 5px;" align="right">
+	    <div class="btn-group" uib-dropdown is-open="allocTestCaseMenu.isopen">
+	      <button id="single-button" type="button" class="btn btn-default" uib-dropdown-toggle >
+	        Allocation Test Case Menu <span class="caret"></span>
+	      </button>
+	      <ul uib-dropdown-menu role="menu" aria-labelledby="split-button" >
+	        <li ng-click="addCustomFix()" role="menuitem"><a href="#">Add Custom FIX Field</a></li>
+	        <li class="divider"></li>
+	        <li ng-click="clearNew()" role="menuitem"><a href="#">New</a></li>
+	        <li ng-click="loadTestCase()" role="menuitem"><a href="#">Load</a></li>
+	        <li ng-click="setTestCaseName()" role="menuitem"><a href="#">Save</a></li>
+	        <li ng-click="saveAsNew()" role="menuitem"><a href="#">Save as New</a></li>
+	        <li class="divider"></li>
+	        <li ng-click="removeTestCase()" role="menuitem"><a href="#">Delete</a></li>
+	      </ul>
+	    </div>	
+	</div>
 	<div class="row" style="margin-top: 5px">
+	<!-- 
 		<div class="col-sm-4">
 			<ui-select ng-model="internal.selectedTestCase" theme="selectize">
 			    <ui-select-match placeholder="">{{internal.selectedTestCase.name}}</ui-select-match>
@@ -9,10 +26,13 @@
 			    </ui-select-choices>
 			</ui-select>				
 		</div>
-		<div class="col-sm-8">
-			<label class="btn btn-primary btn-sm" ng-model="allocMsgType" uib-btn-radio="'AllocationInstruction'" btn-checkbox-true>Allocation Instruction (35=J)</label>
-			<label class="btn btn-primary btn-sm" ng-model="allocMsgType" uib-btn-radio="'AllocationReport'" >Allocation Report (35=AS)</label>
+		 -->
+		<div class="col-sm-3"></div>
+		<div class="col-sm-6">
+			<label class="btn btn-primary btn-sm" ng-model="model.data.fixMsgType" uib-btn-radio="'AllocationInstruction'" btn-checkbox-true>Allocation Instruction (35=J)</label>
+			<label class="btn btn-primary btn-sm" ng-model="model.data.fixMsgType" uib-btn-radio="'AllocationReport'" >Allocation Report (35=AS)</label>
 		</div>
+		<div class="col-sm-3"></div>
 	</div>
 
 	<div class="row">
@@ -57,10 +77,8 @@
 			uib-tooltip="Security ID" tooltip-placement="bottom"/>
 		</div>
 	</div>
-	<div class="row">
-		<div class="col-lg">
+	<div align="center">
 			<div id="grid1" ui-grid="gridOpts" ui-grid-edit ui-grid-selection ui-grid-auto-resize class="grid"></div>
-		</div>
 	</div>
 	<div class="row" style="margin-top: 5px">
 		<div class="col-sm">
@@ -75,6 +93,7 @@
 		</div>
 	</div>
 	<hr/>
+	<!-- 
 	<uib-accordion close-others="true">
 	    <div uib-accordion-group class="panel-default" is-open="customTagStatus">
 			<uib-accordion-heading ng-click="toggleOpen();">
@@ -104,8 +123,16 @@
 	    </div>
     </uib-accordion>
 	<hr/>
+     -->
 	<div class="row" style="margin-top: 5px">
 		<div class="col-sm">
+			<button class="btn btn-success" ng-click="sendMessageToServer()" style="width: 100%"><i class="fa fa-send"></i> Send Message</button>
+		</div>
+	</div>
+    <!-- 
+	<div class="row" style="margin-top: 5px">
+		<div class="col-sm">
+			<button class="btn btn-success btn-sm" ng-click="addCustomFix()" style="width: 100%"><i class="fa fa-plus"></i> Add Custom FIX Field</button>
 		</div>
 		<div class="col-sm">
 			<button class="btn btn-success btn-sm" ng-click="viewData()" style="width: 100%"><i class="fa fa-send"></i> Send Message</button>
@@ -118,14 +145,15 @@
 	</div>
 	<div class="row" style="margin-top: 5px">
 		<div class="col-sm">
-			<button class="btn btn-primary btn-sm" ng-click="" style="width: 100%"><i class="fa fa-save"></i> Update</button>
+			<button class="btn btn-primary btn-sm" ng-click="saveTestCase()" style="width: 100%"><i class="fa fa-save"></i> Update</button>
 		</div>
 		<div class="col-sm">
-			<button class="btn btn-primary btn-sm" ng-click="" style="width: 100%"><i class="fa fa-plus-square"></i> Save as New</button>
+			<button class="btn btn-primary btn-sm" ng-click="saveAsNew()" style="width: 100%"><i class="fa fa-plus-square"></i> Save as New</button>
 		</div>
 		<div class="col-sm">
-			<button class="btn btn-primary btn-sm" ng-click="" style="width: 100%"><i class="fa fa-minus-square"></i> Remove</button>
+			<button class="btn btn-danger btn-sm" ng-click="removeTestCase()" style="width: 100%"><i class="fa fa-minus-square"></i> Remove</button>
 		</div>
 	</div>
+	 -->
 
 </div>

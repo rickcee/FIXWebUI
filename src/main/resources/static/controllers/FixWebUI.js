@@ -1,10 +1,10 @@
-var fixApp = angular.module('fixApp', ['ngSanitize', 'ngAnimate', 'ngTouch', 'ui.select', 'ui.bootstrap', 'ui.grid', 'ui.grid.edit', 'ui.grid.selection','ui.grid.autoResize']);
+var fixApp = angular.module('fixApp', ['ngSanitize', 'ngAnimate', 'ngTouch', 'ui.select', 'ui.bootstrap', 'ui.grid', 'ui.grid.edit', 'ui.grid.selection','ui.grid.autoResize', 'angularjsNotify']);
 
-fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$window', 'uiGridConstants', '$filter', '$timeout', function ($scope, $http, $uibModal, $interval, $window, uiGridConstants, $filter, $timeout) {
+fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$window', 'uiGridConstants', '$filter', '$timeout','confirmService', 'Notify', function ($scope, $http, $uibModal, $interval, $window, uiGridConstants, $filter, $timeout, confirmService, Notify) {
 
 	$scope.debugMode = true;
 	$scope.debugClass = 'black';
-	$scope.allocMsgType = 'AllocationInstruction';
+	//$scope.allocMsgType = 'AllocationInstruction';
 	
 	$scope.toggleDebug = function() {
 		$scope.debugMode = !$scope.debugMode;
@@ -17,7 +17,9 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 
 	$scope.model = { };
 	$scope.model.data = { };
-	$scope.model.data.customTags = [];
+	$scope.model.data.customTags = { };
+	$scope.model.data.fixMsgType = 'AllocationInstruction';
+
 	$scope.internal = { };
 	
 	$scope.testCases = [{'id':'FIX44', 'name':'2 Allocations - 50mm'}, {'id':'FIXT1.1', 'name':'5 Allocations - 250mm'}];
@@ -109,6 +111,10 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 		    }
 	];
 	
+	$scope.allocTestCaseMenu = {
+		    isopen: false
+		  };
+	
 	$scope.gridOpts = {
 		enableRowSelection : true,
 		showGridFooter : true,
@@ -196,6 +202,74 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 		});
 	}
 	
+	$scope.saveAsNew = function() {
+		$scope.model.data.id = null;
+		for(var i=0; i< $scope.model.data.allocs.length; i++) {
+			$scope.model.data.allocs[i].uuid = null;
+		}
+		$scope.saveTestCase();
+	}
+	
+	$scope.removeTestCase = function () {
+		
+		if($scope.model.data.id == null) {
+			//Notification('No model loaded in memory!');
+			//Notification.error({message: 'Error notification 1s', delay: 2000});
+			Notify.addMessage('Hello', 'info');
+			return;
+		}
+		
+		var msg = "Are you sure you want to remove the selected test case?";
+		
+		var modalOptions = {
+			closeButtonText : 'Cancel',
+			actionButtonText : 'Remove',
+			headerText : ':: Confirm ::',
+			bodyText : msg
+		};
+
+		confirmService.showModal({}, modalOptions)
+				.then(function(result) {
+					$http({
+						url : 'public/cases/allocation/' + $scope.model.data.id,
+						method : "DELETE"
+					}).then(function(response) {
+						console.log(response.data);
+					});
+				});
+//		var $uibModalInstance = $uibModal.open({
+//			templateUrl : 'templates/RemoveTestCaseTemplate.html',
+//			scope: $scope,
+//			size: 'md',
+//			controller : 
+//				
+//			function ($scope, $uibModal, $uibModalInstance) {
+//				
+//				$scope.close = function() {
+//					$uibModalInstance.close();
+//				};
+//				
+//				$scope.sendMessage = function() {
+//				}
+//				
+//			},
+//			backdrop : 'static'
+//		});		
+	}
+	
+	$scope.saveTestCase = function () {
+		$http({
+			url : 'public/cases/allocation',
+			method : "POST",
+			data : $scope.model.data
+		}).then(function(response) {
+			console.log(response.data);
+			$scope.model.data = response.data;
+			$scope.gridOpts.data = $scope.model.data.allocs;
+			$scope.customTagGridOpts.data = $scope.model.data.customTags;
+		});
+	}
+	
 	$scope.clearNew = function() {
 		$scope.model.data = {
 				securityId: '912828CR7',
@@ -214,24 +288,96 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 		$scope.internal.selectedSecurityIdSource = $scope.securitySourceList[0];
 		$scope.internal.selectedTestCase = null;
 	}
-	  
-	$scope.addCustomFix = function() {
-		console.log('addCustomFix...');
+	
+	$scope.setTestCaseName = function() {
 		var $uibModalInstance = $uibModal.open({
-			templateUrl : 'templates/customFixTemplate.html',
+			templateUrl : 'templates/SaveTestCaseTemplate.html',
 			scope: $scope,
 			size: 'md',
 			controller : 
 				
 			function ($scope, $uibModal, $uibModalInstance) {
 				
-				$scope.cancel = function() {
+				$scope.close = function() {
 					$uibModalInstance.close();
 				};
 				
-				$scope.add = function() {
+				$scope.addNameAndSave = function() {
+					$scope.model.data.name = $scope._value;
+					$scope.close();
+				}
+				
+			},
+			backdrop : 'static'
+		});
+	};
+	
+	$scope.loadTestCase = function() {
+		var $uibModalInstance = $uibModal.open({
+			templateUrl : 'templates/LoadTestCaseTemplate.html',
+			scope: $scope,
+			size: 'md',
+			controller : 
+				
+			function ($scope, $uibModal, $uibModalInstance) {
+				
+				$scope.close = function() {
+					$uibModalInstance.close();
+				};
+				
+				$scope.loadTestCase = function() {
+				}
+				
+			},
+			backdrop : 'static'
+		});
+	};
+	
+	$scope.sendMessageToServer = function() {
+		var $uibModalInstance = $uibModal.open({
+			templateUrl : 'templates/SendMessageTemplate.html',
+			scope: $scope,
+			size: 'md',
+			controller : 
+				
+			function ($scope, $uibModal, $uibModalInstance) {
+				
+				$scope.close = function() {
+					$uibModalInstance.close();
+				};
+				
+				$scope.sendMessage = function() {
+				}
+				
+			},
+			backdrop : 'static'
+		});
+	};
+	
+	$scope.addCustomFix = function() {
+		console.log('addCustomFix...');
+		var $uibModalInstance = $uibModal.open({
+			templateUrl : 'templates/CustomFixTemplate.html',
+			scope: $scope,
+			size: 'md',
+			controller : 
+				
+			function ($scope, $uibModal, $uibModalInstance) {
+				
+				$scope.close = function() {
+					$uibModalInstance.close();
+				};
+				
+				$scope.addNewCustomTag = function() {
 					$scope.model.data.customTags.push({key: $scope._key, value: $scope._value});
 					$scope.cancel();
+				}
+				
+				$scope.removeSelectedCustomTag = function() {
+					var index = $scope.customTagGridOpts.data.indexOf($scope.selectedCustomRow);
+				    if (index > -1) {
+				    	$scope.customTagGridOpts.data.splice(index, 1);
+				    }
 				}
 				
 			},
@@ -239,12 +385,12 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 		});
 	};
 	  
-	$scope.removeCustomFix = function() {
-		var index = $scope.customTagGridOpts.data.indexOf($scope.selectedCustomRow);
-	    if (index > -1) {
-	    	$scope.customTagGridOpts.data.splice(index, 1);
-	    }
-	}
+//	$scope.removeCustomFix = function() {
+//		var index = $scope.customTagGridOpts.data.indexOf($scope.selectedCustomRow);
+//	    if (index > -1) {
+//	    	$scope.customTagGridOpts.data.splice(index, 1);
+//	    }
+//	}
 	
 	$scope.customTagStatus = false;
 	$scope.toggleOpen = function() {
@@ -271,3 +417,15 @@ fixApp.directive('jsonText', function() {
         }
     };
 });
+
+//fixApp.config(function(NotificationProvider) {
+//    NotificationProvider.setOptions({
+//        delay: 10000,
+//        startTop: 20,
+//        startRight: 10,
+//        verticalSpacing: 20,
+//        horizontalSpacing: 20,
+//        positionX: 'left',
+//        positionY: 'bottom'
+//    });
+//});

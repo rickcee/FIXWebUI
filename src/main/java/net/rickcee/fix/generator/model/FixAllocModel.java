@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * @author rickcee
@@ -25,10 +26,11 @@ import lombok.Setter;
 @JsonIgnoreProperties(ignoreUnknown = true, value = "settlementCurrency, settlementLocation")
 @Entity
 @Table(name = "allocation_detail")
+@ToString
 public class FixAllocModel {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private UUID uui;
+	private UUID uuid;
 	private String id;
 	private String account;
 	private Long quantity;

@@ -1,0 +1,56 @@
+<div data-toggle="modal">
+	<div class="modal-content">
+		<div class="modal-header panel-dashboard">
+			<h4 class="modal-title">Add Custom FIX Tag</h4>
+		</div>
+		<div class="modal-body form-group">
+			<div class="row">
+				<div class="col-md-12">
+					<div nf-if="customTagStatus" id="grid2" ui-grid="customTagGridOpts" ui-grid-edit ui-grid-selection ui-grid-auto-resize class="grid"></div>
+				</div>
+			</div>
+			<!-- 
+			<div class="row" style="margin-top: 5px">
+				<div class="col-sm">
+				</div>
+				<div class="col-sm">
+					<button class="btn btn-success btn-sm" ng-click="addCustomFix()" style="width: 100%"><i class="fa fa-plus"></i> Add Custom FIX Field</button>
+				</div>
+				<div class="col-sm">
+					<button class="btn btn-warning btn-sm" ng-click="removeCustomFix()" style="width: 100%"><i class="fa fa-minus"></i> Remove Selected</button>
+				</div>
+				<div class="col-sm">
+				</div>
+			</div>
+			 -->
+			<!-- 
+			<div class="row"">
+				<div class="col-sm">
+					<label>FIX Tag #:</label> 
+				</div>
+				<div class="col-sm">
+					<input type="text" ng-model="_key">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm">
+					<label>Value:</label> 
+				</div>
+				<div class="col-sm">
+					<input type="text" ng-model="_value">
+				</div>
+			</div>
+			 -->
+		</div>
+		<div class="modal-footer panel-dashboard" >
+			<div style="width: 100%; margin: auto; text-align: center">
+				<button ng-click="addNewCustomTag()" class="btn btn-primary"><i class="fa fa-plus"></i> Add</button>
+				<button ng-click="removeSelectedCustomTag()" class="btn btn-danger"><i class="fa fa-minus"></i> Remove Selected</button>
+				<button ng-click="close()" class="btn btn-warning">Close</button>
+			</div>
+		</div>
+		<div class="row" ng-show="debugMode">
+			{{_key}} / {{_value}}
+		</div>
+	</div>
+</div>

@@ -1,0 +1,28 @@
+<div data-toggle="modal">
+	<div class="modal-content">
+		<div class="modal-header panel-dashboard">
+			<h4 class="modal-title">Load Test Case</h4>
+		</div>
+		<div class="modal-body form-group">
+			<div class="row">
+				<div class="col-md-1"></div>
+				<div class="col-md-10">
+					<ui-select ng-model="internal.selectedTestCase" theme="selectize">
+					    <ui-select-match placeholder="">{{internal.selectedTestCase.name}}</ui-select-match>
+					    <ui-select-choices repeat="item in testCases | filter: $select.search">
+					        <span ng-bind-html="item.name | highlight: $select.search"></span>
+					    </ui-select-choices>
+					</ui-select>	
+				</div>
+				<div class="col-md-1"></div>
+			</div>
+
+		</div>
+		<div class="modal-footer panel-dashboard">
+			<div style="width: 100%; margin: auto; text-align: center">
+				<button ng-click="loadTestCase()" class="btn btn-primary"><i class="fa fa-plus"></i> Load</button>
+				<button ng-click="close()" class="btn btn-warning">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

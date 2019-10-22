@@ -99,6 +99,7 @@ public class FixMsgGeneratorController {
 	
 	@RequestMapping(method = RequestMethod.POST, path = "/public/cases/allocation", produces = { "application/json" })
 	public ResponseEntity<AllocationTestCase> CreateTestCase(@RequestBody AllocationTestCase atc) {
+		log.info("Received: " + atc);
 		AllocationTestCase result = dao.create(atc);
 		return new ResponseEntity<AllocationTestCase>(result, HttpStatus.OK);
 	}

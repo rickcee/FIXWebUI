@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,6 +20,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.Data;
+import lombok.ToString;
 import net.rickcee.fix.util.HashMapConverter;
 
 /**
@@ -30,6 +30,7 @@ import net.rickcee.fix.util.HashMapConverter;
 @Data
 @Entity
 @Table(name = "allocation_test_case")
+@ToString
 //@Builder
 public class AllocationTestCase implements Serializable {
 	private static final long serialVersionUID = -3363044234317417889L;
@@ -38,6 +39,7 @@ public class AllocationTestCase implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;
+	private String fixMsgType;
 	private String onBehalfOfCompId;
 	private String buySell;
 	private String securitySource;
@@ -51,6 +53,6 @@ public class AllocationTestCase implements Serializable {
 	@Lob
 	@Column(columnDefinition = "clob")
 	@Convert(converter = HashMapConverter.class)
-	private Map<String, String> customTags = new HashMap<>();
+	private HashMap<String, String> customTags = new HashMap<>();
 
 }

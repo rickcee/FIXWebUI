@@ -6,7 +6,7 @@ function ($uibModal) {
         backdrop: true,
         keyboard: true,
         modalFade: true,
-        templateUrl: 'templates/confirmServiceTemplate.html'
+        templateUrl: 'templates/ConfirmServiceTemplate.html'
     };
 
     var modalOptions = {
