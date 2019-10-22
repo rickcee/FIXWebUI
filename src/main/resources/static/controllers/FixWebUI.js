@@ -213,9 +213,6 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 	$scope.removeTestCase = function () {
 		
 		if($scope.model.data.id == null) {
-			//Notification('No model loaded in memory!');
-			//Notification.error({message: 'Error notification 1s', delay: 2000});
-			Notify.addMessage('Hello', 'info');
 			return;
 		}
 		
