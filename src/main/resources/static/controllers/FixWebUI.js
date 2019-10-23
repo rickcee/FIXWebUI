@@ -1,6 +1,6 @@
-var fixApp = angular.module('fixApp', ['ngSanitize', 'ngAnimate', 'ngTouch', 'ui.select', 'ui.bootstrap', 'ui.grid', 'ui.grid.edit', 'ui.grid.selection','ui.grid.autoResize', 'angularjsNotify']);
+var fixApp = angular.module('fixApp', ['ngSanitize', 'ngAnimate', 'ngTouch', 'ui.select', 'ui.bootstrap', 'ui.grid', 'ui.grid.edit', 'ui.grid.selection','ui.grid.autoResize']);
 
-fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$window', 'uiGridConstants', '$filter', '$timeout','confirmService', 'Notify', function ($scope, $http, $uibModal, $interval, $window, uiGridConstants, $filter, $timeout, confirmService, Notify) {
+fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$window', 'uiGridConstants', '$filter', '$timeout','confirmService', function ($scope, $http, $uibModal, $interval, $window, uiGridConstants, $filter, $timeout, confirmService, Notify) {
 
 	$scope.debugMode = true;
 	$scope.debugClass = 'black';
