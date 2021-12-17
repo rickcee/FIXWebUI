@@ -37,7 +37,7 @@ public class JPAConfig {
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 		em.setDataSource(dataSource);
-		em.setPackagesToScan("com.baeldung.autoconfiguration.example");
+		em.setPackagesToScan("net.rickcee.fix");
 		em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 //		if (additionalProperties() != null) {
 //			em.setJpaProperties(additionalProperties());

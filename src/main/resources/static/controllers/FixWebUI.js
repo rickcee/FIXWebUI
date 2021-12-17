@@ -192,6 +192,7 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 	}
 	
 	$scope.sendToServer = function () {
+		console.log("sendToServer(): " + JSON.stringify( $scope.model) );
 		$http({
 			url : 'public/fix/allocation/send',
 			method : "POST",
@@ -344,6 +345,12 @@ fixApp.controller('MainCtrl', ['$scope', '$http', '$uibModal', '$interval' ,'$wi
 				};
 				
 				$scope.sendMessage = function() {
+					console.log($scope.internal.selectedFixSession);
+					$scope.model.data.sessionId = $scope.internal.selectedFixSession.name;
+					$scope.model.data.buySell = $scope.internal.selectedBuySell.value;
+					$scope.model.data.securitySource = $scope.internal.selectedSecurityIdSource.key;
+					console.log(JSON.stringify($scope.model)) ;
+					$scope.sendToServer();
 				}
 				
 			},

@@ -1,30 +1,46 @@
 package net.rickcee.fix.generator.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
-import net.rickcee.fix.generator.model.AllocationTestCase;
-import net.rickcee.fix.generator.model.FixAllocModel;
-import net.rickcee.fix.generator.model.FixAllocationMsgModel;
-import net.rickcee.fix.jpa.IGenericDao;
+import net.rickcee.fix.client.RCNetFixClient;
 import net.rickcee.fix.server.RCNetFixServer;
 import net.rickcee.fix.util.FIX44;
 import net.rickcee.fix.util.FIX50;
+import net.rickcee.fix.util.Fix44Cracker;
 import quickfix.Message;
 import quickfix.SessionID;
 import quickfix.ThreadedSocketAcceptor;
+import quickfix.field.AllocAccount;
+import quickfix.field.AllocQty;
+import quickfix.field.AvgPx;
+import quickfix.field.ConfirmID;
+import quickfix.field.ConfirmStatus;
+import quickfix.field.ConfirmTransType;
+import quickfix.field.GrossTradeAmt;
+import quickfix.field.NetMoney;
+import quickfix.field.NoCapacities;
+import quickfix.field.NoLegs;
+import quickfix.field.NoUnderlyings;
+import quickfix.field.SenderCompID;
+import quickfix.field.SendingTime;
+import quickfix.field.Side;
+import quickfix.field.TargetCompID;
+import quickfix.field.TradeDate;
+import quickfix.field.TransactTime;
+import quickfix.fix44.Confirmation;
 
 @RestController
 //@RequestMapping("/secured/")
@@ -32,6 +48,8 @@ import quickfix.ThreadedSocketAcceptor;
 public class FixMsgGeneratorController {
 	@Autowired
 	private FIX44 fix44;
+	@Autowired
+	private Fix44Cracker f44cracker;
 	@Autowired
 	private FIX50 fix50;
 	@Autowired
@@ -41,13 +59,8 @@ public class FixMsgGeneratorController {
 	private ThreadedSocketAcceptor threadedSocketAcceptor;
 	@Autowired
 	private RCNetFixServer fixServer;
-	
-	private IGenericDao<AllocationTestCase> dao;
 	@Autowired
-	public void setDao(IGenericDao<AllocationTestCase> daoToSet) {
-		dao = daoToSet;
-		dao.setClazz(AllocationTestCase.class);
-	}	
+	private RCNetFixClient fixClient;
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/HealthCheck", produces = { "application/json" })
 	public Object healthCheck() {
@@ -71,54 +84,66 @@ public class FixMsgGeneratorController {
 		return result;
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, path = "/public/test_case/add", produces = { "application/json" })
-	public Object addTestCase() {
-//		AllocationTestCase newCase = AllocationTestCase.builder().name("Test Case 1").buySell("B").quantity(1000000L)
-//				.avgPrice(99.256).securitySource("CUSIP").securityId("912828CR7").build();
-		AllocationTestCase newCase =new AllocationTestCase();
-		newCase.setName("Test Case 1");
-		newCase.setBuySell("B");
-		newCase.setQuantity(1000000L);
-		newCase.setAvgPrice(99.256);
-		newCase.setSecuritySource("CUSIP");
-		newCase.setSecurityId("912828CR7");
-		FixAllocModel alloc = new FixAllocModel();
-		alloc.setId("ALLOC-ID");
-		alloc.setSettlementCurrency("USD");
-		alloc.setSettlementLocation("DTC");
-		alloc.setAccount("ACCT-1");
-		alloc.setAccruedInterest(99.58);
-		alloc.setNetMoney(50000.00);
-		alloc.setQuantity(1000000L);
-		newCase.getAllocs().add(alloc);
-		dao.create(newCase);
+	@RequestMapping(method = RequestMethod.GET, path = "/support/fix/confirm/send", produces = { MediaType.APPLICATION_JSON })
+	public Object sendConfirm() {
 		HashMap<String, String> result = new HashMap<>();
-		result.put("result", "OK");
+		try {
+			fixClient.sendConfirmation();
+			result.put("result", "OK");
+		} catch (Exception e) {
+			result.put("result", "ERROR");
+			result.put("error", e.getMessage());
+			log.error(e.getMessage(), e);
+		}
 		return result;
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, path = "/public/cases/allocation", produces = { "application/json" })
-	public ResponseEntity<AllocationTestCase> CreateTestCase(@RequestBody AllocationTestCase atc) {
-		log.info("Received: " + atc);
-		AllocationTestCase result = dao.create(atc);
-		return new ResponseEntity<AllocationTestCase>(result, HttpStatus.OK);
+	@RequestMapping(method = RequestMethod.GET, path = "/support/fix/confirm", produces = { MediaType.TEXT_PLAIN })
+	public String createConfirm() {
+		Confirmation conf = new Confirmation();
+		conf.getHeader().setField(new SenderCompID("RCBROKER"));
+		conf.getHeader().setField(new TargetCompID("RC-E-TRADING"));
+		conf.getHeader().setField(new SendingTime(LocalDateTime.now()));
+		conf.set(new ConfirmID("CID-000001"));
+		conf.set(new ConfirmTransType(ConfirmTransType.NEW));
+		conf.set(new ConfirmStatus(ConfirmStatus.RECEIVED));
+		conf.set(new TransactTime(LocalDateTime.now()));
+		conf.set(new TradeDate("20200723"));
+		conf.set(new NoUnderlyings(0));
+		conf.set(new NoLegs(0));
+		conf.set(new AllocQty(150000));
+		conf.set(new Side(Side.BUY));
+		conf.set(new NoCapacities(0));
+		conf.set(new AvgPx(99.863));
+		conf.set(new AllocAccount("ALLOC-ACCT-1"));
+		conf.set(new GrossTradeAmt(149794.5));
+		conf.set(new NetMoney(149794.5));
+		log.info(conf.toString());
+		return conf.toString();
 	}
 	
-	@RequestMapping(method = RequestMethod.GET, path = "/public/cases/allocation/{id}", produces = { "application/json" })
-	public Object viewTestCase(@PathVariable("id") Long id) {
-		return dao.findOne(id);
-	}
-	
-	@RequestMapping(method = RequestMethod.DELETE, path = "/public/cases/allocation/{id}", produces = { "application/json" })
-	public ResponseEntity<AllocationTestCase> removeTestCase(@PathVariable("id") Long id) {
-		AllocationTestCase result = dao.findOne(id);
-		dao.delete(result);
-		return new ResponseEntity<AllocationTestCase>(result, HttpStatus.OK);
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, path = "/public/test_case/view", produces = { "application/json" })
-	public Object getTestCase() {
-		return dao.findAll();
+	@RequestMapping(method = RequestMethod.POST, path = "/support/fix/process", produces = { "application/json" })
+	public Object processCustomFix(@RequestBody String fixMsg) {
+		HashMap<String, String> result = new HashMap<>();
+		try {
+			quickfix.fix44.Message msg = new quickfix.fix44.Message();
+			msg.fromString(fixMsg, null, false);
+			//SwingUtilities.invokeLater(appCtx.getBean(FixMessageProcessor.class, msg, true));
+			SessionID s = null;
+			for(SessionID sess : threadedSocketAcceptor.getSessions()) {
+				if(sess.toString().startsWith("FIX.4.4")) {
+					s = sess;
+					break;
+				}
+			}
+			f44cracker.crack(msg, s);
+			result.put("result", "OK");
+		} catch(Exception e) {
+			result.put("result", "ERROR");
+			result.put("error", e.getMessage());
+			log.error(e.getMessage(), e);
+		}
+		return result;
 	}
 	
 	@RequestMapping(method = RequestMethod.GET, path = "/public/fix/sessions", produces = { "application/json" })
@@ -134,110 +159,5 @@ public class FixMsgGeneratorController {
 
 		return sessions;
 	}
-	
-	@RequestMapping(method = RequestMethod.POST, path = "/public/fix/allocation/send", produces = { "application/json" })
-	public Object generateFixMessage(@RequestBody FixAllocationMsgModel model) {
-		HashMap<String, String> result = new HashMap<>();
-		
-		String session = model.getSessionId();
-		log.info("FIX Session ID: " + session);
-		SessionID sessionId = null;
-		for(SessionID s : threadedSocketAcceptor.getSessions()) {
-			if(session.equals(s.toString())) {
-				sessionId = s;
-			}
-		}
-		
-		Message msg = null;
-		if(session.startsWith("FIX.4.4")) {
-			msg = fix44.generateAllocationInstruction(model);
-		} else if(session.startsWith("FIXT.1.1")) {
-			msg = fix50.generateAllocationReport(model);
-		} else {
-			// ??
-		}
-		
-		if(model.getSendToClient()) {
-			fixServer.sendMessage(msg, sessionId);
-		}
-		
-		// This MUST be after sendMessage so we ensure common fields are added by quickfixj.
-		result.put("result", msg.toString());
-		
-		return result;
-	}
-	
-//	@RequestMapping(method = RequestMethod.POST, path = "/public/service/generate", produces = { "application/json" })
-//	public Object generateFixMessage(@RequestBody FixMsgModel model) {
-//		HashMap<String, String> result = new HashMap<>();
-//		
-//		String fixVersion = model.getFixVersion();
-//		log.info("FIX Version: " + fixVersion);
-//		SessionID session = null;
-//		for(SessionID s : threadedSocketInitiator.getSessions()) {
-//			if("FIX44".equals(fixVersion) && s.getBeginString().equals("FIX.4.4")) {
-//				session = s;
-//			} else if("FIXT1.1".equals(fixVersion) && s.getBeginString().equals("FIXT.1.1")) {
-//				session = s;
-//			}
-//		}
-//		
-//		if("FIX44".equals(fixVersion)) {
-//			result.put("result", fix44.generateAllocationInstruction(model).toString());
-//			try {
-//				fixClient.toApp(fix44.generateAllocationInstruction(model), session);
-//			} catch (DoNotSend e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		} else if("FIXT1.1".equals(fixVersion)) {
-//			result.put("result", fix50.generateAllocationInstruction(model).toString());
-//			
-//			//threadedSocketInitiator.getSessions().get(0).
-//			// FIX.4.4
-//			// FIXT.1.1
-//			try {
-//				fixClient.toApp(fix50.generateAllocationInstruction(model), session);
-//			} catch (DoNotSend e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		return result;
-//	}
-	
-//	@RequestMapping(method = RequestMethod.GET, path = "/public/alloc", produces = { "text/plain" })
-//	public Object servicePublic2() {
-//		quickfix.fix44.AllocationInstruction ai = new AllocationInstruction();
-//		ai.set(new Quantity(1000));
-//		ai.set(new Side(Side.BUY));
-//		ai.setField(new SenderCompID("BLP"));
-//		ai.setField(new TargetCompID("RBSG"));
-//		ai.setField(new MsgSeqNum(1));
-//		ai.setField(new SendingTime(LocalDateTime.now()));
-//		ai.setField(new AvgPx(105.12109375));
-//		ai.set(new Currency("USD"));
-//		ai.setField(new SecurityIDSource(SecurityIDSource.CUSIP));
-//		ai.setField(new SecurityID("9128285P1"));
-//		ai.setField(new AllocNoOrdersType(AllocNoOrdersType.EXPLICIT_LIST_PROVIDED));
-//		ai.setField(new TotNoAllocs(2));
-//		
-//		Group g = new Group(NoAllocs.FIELD, AllocAccount.FIELD);
-//		g.setField(new AllocAccount("EXT-ACCT-1"));
-//		g.setField(new AllocQty(500));
-//		g.setField(new AllocNetMoney(550));
-//		g.setField(new AllocAccruedInterestAmt(50));
-//		g.setField(new AllocSettlCurrency("USD"));
-//		ai.addGroup(g);
-//		
-//		g.setField(new AllocAccount("EXT-ACCT-2"));
-//		g.setField(new AllocQty(500));
-//		g.setField(new AllocNetMoney(550));
-//		g.setField(new AllocAccruedInterestAmt(50));
-//		g.setField(new AllocSettlCurrency("CAD"));
-//		ai.addGroup(g);
-//				
-//		return ai.toString();
-//	}
 	
 }

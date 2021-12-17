@@ -69,7 +69,7 @@ public class RCNetFixServer implements Application {
 	@Override
 	public void fromApp(Message message, SessionID sessionId)
 			throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
-		log.info("--------- fromApp ---------");
+		log.info(this.getClass().getSimpleName() + " - fromApp: [" + message.toRawString() + "]");
 		try {
 			if (sessionId.getBeginString().startsWith("FIX.4.4")) {
 				msgCracker44.crack(message, sessionId);
